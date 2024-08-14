@@ -1,0 +1,115 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <title>Sensor Data Display</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Sensor Data</h1>
+    <table border="1" id="data-table">
+        <thead>
+            <tr>
+                <th>Temperature (℃)</th>
+                <th>Humidity (%)</th>
+                <th>Pressure (hPa)</th>
+                <th>CO2 (ppm)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for data in sensor_data %}
+            <tr>
+                <td>{{ data['Temperature'] }}</td>
+                <td>{{ data['Humidity'] }}</td>
+                <td>{{ data['Pressure'] }}</td>
+                <td>{{ data['CO2'] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <th>Average Temperature</th>
+                <th>Average Humidity</th>
+                <th>Average Pressure</th>
+                <th>Average CO2</th>
+            </tr>
+            <tr>
+                <td id="average-temperature"></td>
+                <td id="average-humidity"></td>
+                <td id="average-pressure"></td>
+                <td id="average-co2"></td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <h2>Sensor Data Chart</h2>
+    <canvas id="sensorChart" width="400" height="200"></canvas>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('/data')
+                .then(response => response.json())
+                .then(data => {
+                    const temperatures = data.map(item => parseFloat(item.Temperature));
+                    const humidities = data.map(item => parseFloat(item.Humidity));
+                    const pressures = data.map(item => parseFloat(item.Pressure));
+                    const co2s = data.map(item => parseFloat(item.CO2));
+                    const labels = data.map((_, index) => `Data ${index + 1}`);
+
+                    // グラフを描画
+                    const ctx = document.getElementById('sensorChart').getContext('2d');
+                    const sensorChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Temperature (℃)',
+                                data: temperatures,
+                                borderColor: 'rgba(255, 99, 132, 1)',
+                                borderWidth: 1,
+                                fill: false
+                            }, {
+                                label: 'Humidity (%)',
+                                data: humidities,
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                borderWidth: 1,
+                                fill: false
+                            }, {
+                                label: 'Pressure (hPa)',
+                                data: pressures,
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                borderWidth: 1,
+                                fill: false
+                            }, {
+                                label: 'CO2 (ppm)',
+                                data: co2s,
+                                borderColor: 'rgba(153, 102, 255, 1)',
+                                borderWidth: 1,
+                                fill: false
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+
+                    // 平均値を計算して表示
+                    const averageTemperature = temperatures.reduce((a, b) => a + b, 0) / temperatures.length;
+                    const averageHumidity = humidities.reduce((a, b) => a + b, 0) / humidities.length;
+                    const averagePressure = pressures.reduce((a, b) => a + b, 0) / pressures.length;
+                    const averageCO2 = co2s.reduce((a, b) => a + b, 0) / co2s.length;
+                    
+                    document.getElementById('average-temperature').textContent = averageTemperature.toFixed(2);
+                    document.getElementById('average-humidity').textContent = averageHumidity.toFixed(2);
+                    document.getElementById('average-pressure').textContent = averagePressure.toFixed(2);
+                    document.getElementById('average-co2').textContent = averageCO2.toFixed(2);
+                });
+        });
+    </script>
+</body>
+</html>
