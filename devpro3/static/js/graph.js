@@ -13,13 +13,13 @@ document.addEventListener('DOMContentLoaded', function(){
             .then(data => {
                 if (data.status === 'success') {
                     alert('G-1：データは正常に追加されました\n湿度・大気圧・CO2濃度データは平均を入力されます\nページの再読み込みを行います');
-                    location.reload();  // ページを再読み込みしてデータを更新
+                    location.reload();  // ページを再読み込みしてデータを更新//
                 } else {
                     alert('Failed to add data: ' + data.error);
                 }
             })
             .catch(error => {
-                console.error('Fetch Error:', error);       // データの追加中のエラー
+                console.error('Fetch Error:', error);      // データの追加中のエラー//
                 alert('An error occurred while adding data');
             })
         })
