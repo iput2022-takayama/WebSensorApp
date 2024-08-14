@@ -11,7 +11,7 @@ def read_sensor_data(filename):
     try:
         with open(filename, mode='r', newline='') as file:
             csv_reader = csv.reader(file)
-            headers = next(csv_reader, None)  # ヘッダーをスキップ
+            headers = next(csv_reader, None)  
             for row in csv_reader:
                 if len(row) == 5:
                     data_list.append({
